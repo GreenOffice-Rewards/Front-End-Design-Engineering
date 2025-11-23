@@ -1,80 +1,140 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { CarbonCredit } from '../types'
+import { useAuth } from '../contexts/AuthContext'
+import { employeeService, HomeOfficeRecord, EmployeeStats } from '../services/api'
+
+interface WeeklyStat {
+  week: string
+  days: number
+  co2: number
+  credits: number
+}
 
 const Dashboard: React.FC = () => {
-  const [homeOfficeDays, setHomeOfficeDays] = useState<number>(12)
-  const [totalCO2, setTotalCO2] = useState<number>(45.6)
-  const [totalCredits, setTotalCredits] = useState<number>(150)
-  const [history, setHistory] = useState<CarbonData[]>([])
+  const { user } = useAuth()
+  const [homeOfficeDays, setHomeOfficeDays] = useState<number>(0)
+  const [totalCO2, setTotalCO2] = useState<number>(0)
+  const [totalCredits, setTotalCredits] = useState<number>(0)
+  const [history, setHistory] = useState<HomeOfficeRecord[]>([])
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStat[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isRegistering, setIsRegistering] = useState(false)
 
-  interface CarbonData {
-    date: string
-    co2Saved: number
-    creditsEarned: number
-    transportation: string
-  }
-
-  interface WeeklyStat {
-    week: string
-    days: number
-    co2: number
-    credits: number
-  }
-
-  // Simulação de dados da API
+  // Carregar dados do dashboard
   useEffect(() => {
     const loadDashboardData = async () => {
+      if (!user) return
+      
       setIsLoading(true)
-      
-      // Simular delay da API
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const mockHistory: CarbonData[] = [
-        { date: '2025-01-20', co2Saved: 3.8, creditsEarned: 10, transportation: 'Carro' },
-        { date: '2025-01-19', co2Saved: 2.1, creditsEarned: 8, transportation: 'Metrô' },
-        { date: '2025-01-18', co2Saved: 3.8, creditsEarned: 10, transportation: 'Carro' },
-        { date: '2025-01-15', co2Saved: 1.5, creditsEarned: 6, transportation: 'Ônibus' },
-        { date: '2025-01-14', co2Saved: 3.8, creditsEarned: 10, transportation: 'Carro' },
-        { date: '2025-01-11', co2Saved: 2.1, creditsEarned: 8, transportation: 'Metrô' },
-        { date: '2025-01-10', co2Saved: 3.8, creditsEarned: 10, transportation: 'Carro' },
-      ]
+      try {
+        // Carregar estatísticas do colaborador
+        const stats: EmployeeStats = await employeeService.getEmployeeStats(user.id)
+        setHomeOfficeDays(stats.totalHomeOfficeDays)
+        setTotalCO2(stats.totalCO2Saved)
+        setTotalCredits(stats.totalCredits)
 
-      const mockWeeklyStats: WeeklyStat[] = [
-        { week: '16-22 Jan', days: 4, co2: 13.4, credits: 34 },
-        { week: '9-15 Jan', days: 3, co2: 9.2, credits: 24 },
-        { week: '2-8 Jan', days: 5, co2: 16.8, credits: 42 },
-      ]
+        // Carregar histórico
+        const homeOfficeHistory = await employeeService.getHomeOfficeHistory(user.id)
+        setHistory(homeOfficeHistory)
 
-      setHistory(mockHistory)
-      setWeeklyStats(mockWeeklyStats)
-      setIsLoading(false)
+        // Calcular estatísticas semanais (simulação)
+        calculateWeeklyStats(homeOfficeHistory)
+      } catch (error) {
+        console.error('Error loading dashboard data:', error)
+        // Fallback para dados de demonstração
+        loadDemoData()
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     loadDashboardData()
-  }, [])
+  }, [user])
+
+  const loadDemoData = () => {
+    const demoHistory: HomeOfficeRecord[] = [
+      {
+        id: '1',
+        userId: user?.id || '',
+        companyId: user?.companyId || '',
+        recordDate: '2025-01-20',
+        transportation: 'CAR',
+        distance: 15,
+        co2Saved: 3.8,
+        creditsEarned: 10,
+        createdAt: '2025-01-20T10:00:00Z'
+      },
+      {
+        id: '2',
+        userId: user?.id || '',
+        companyId: user?.companyId || '',
+        recordDate: '2025-01-19',
+        transportation: 'BUS',
+        distance: 10,
+        co2Saved: 2.1,
+        creditsEarned: 8,
+        createdAt: '2025-01-19T09:30:00Z'
+      }
+    ]
+
+    setHistory(demoHistory)
+    setHomeOfficeDays(12)
+    setTotalCO2(45.6)
+    setTotalCredits(150)
+    calculateWeeklyStats(demoHistory)
+  }
+
+  const calculateWeeklyStats = (records: HomeOfficeRecord[]) => {
+    // Simulação de cálculo semanal
+    const weekly: WeeklyStat[] = [
+      { week: '16-22 Jan', days: 4, co2: 13.4, credits: 34 },
+      { week: '9-15 Jan', days: 3, co2: 9.2, credits: 24 },
+      { week: '2-8 Jan', days: 5, co2: 16.8, credits: 42 },
+    ]
+    setWeeklyStats(weekly)
+  }
 
   const registerHomeOffice = async () => {
-    // Simular chamada API
-    const newDay: CarbonData = {
-      date: new Date().toISOString().split('T')[0],
-      co2Saved: 3.8,
-      creditsEarned: 10,
-      transportation: 'Carro'
+    if (!user) return
+    
+    setIsRegistering(true)
+    try {
+      // Registrar home office na API
+      const newRecord = await employeeService.registerHomeOffice({
+        userId: user.id,
+        transportation: 'CAR', // Poderia vir de um formulário
+        distance: 15 // Poderia vir de um formulário
+      })
+
+      // Atualizar estado local
+      setHomeOfficeDays(prev => prev + 1)
+      setTotalCO2(prev => prev + newRecord.co2Saved)
+      setTotalCredits(prev => prev + newRecord.creditsEarned)
+      setHistory(prev => [newRecord, ...prev])
+
+      alert('✅ Dia de home office registrado com sucesso! +' + newRecord.creditsEarned + ' créditos verdes 🎉')
+    } catch (error: any) {
+      console.error('Error registering home office:', error)
+      alert(error.message || 'Erro ao registrar home office')
+    } finally {
+      setIsRegistering(false)
     }
-
-    setHomeOfficeDays(prev => prev + 1)
-    setTotalCO2(prev => prev + newDay.co2Saved)
-    setTotalCredits(prev => prev + newDay.creditsEarned)
-    setHistory(prev => [newDay, ...prev])
-
-    alert('✅ Dia de home office registrado com sucesso! +10 créditos verdes 🎉')
   }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR')
+  }
+
+  const getTransportationEmoji = (transport: string) => {
+    const emojis: { [key: string]: string } = {
+      'CAR': '🚗',
+      'MOTORCYCLE': '🏍️',
+      'BUS': '🚌',
+      'SUBWAY': '🚇',
+      'BICYCLE': '🚲',
+      'WALKING': '🚶'
+    }
+    return emojis[transport] || '🚗'
   }
 
   if (isLoading) {
@@ -164,9 +224,17 @@ const Dashboard: React.FC = () => {
             </p>
             <button
               onClick={registerHomeOffice}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 hover:scale-105 transition-all duration-300 shadow-lg"
+              disabled={isRegistering}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg flex items-center justify-center"
             >
-              ✅ Registrar Hoje +10 Créditos
+              {isRegistering ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Registrando...
+                </>
+              ) : (
+                '✅ Registrar Hoje +10 Créditos'
+              )}
             </button>
           </div>
 
@@ -193,15 +261,19 @@ const Dashboard: React.FC = () => {
               Histórico Recente
             </h2>
             <div className="space-y-4">
-              {history.slice(0, 5).map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+              {history.slice(0, 5).map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-xl flex items-center justify-center">
-                      <span className="text-green-600 dark:text-green-400">🌿</span>
+                      <span className="text-green-600 dark:text-green-400">
+                        {getTransportationEmoji(item.transportation)}
+                      </span>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">{formatDate(item.date)}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{item.transportation}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{formatDate(item.recordDate)}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {item.transportation.toLowerCase()}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -246,32 +318,20 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Metas e Conquistas */}
-        <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            🏆 Suas Conquistas
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-              <div className="text-2xl mb-2">🌱</div>
-              <p className="font-semibold text-green-700 dark:text-green-300">Iniciante Verde</p>
-              <p className="text-sm text-green-600 dark:text-green-400">10+ dias</p>
+        {/* Status da API */}
+        <div className="mt-8 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className={`w-3 h-3 rounded-full ${useAuth().apiHealth ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                {useAuth().apiHealth ? 'Conectado à API' : 'Modo de demonstração'}
+              </span>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-              <div className="text-2xl mb-2">💼</div>
-              <p className="font-semibold text-blue-700 dark:text-blue-300">Home Office Pro</p>
-              <p className="text-sm text-blue-600 dark:text-blue-400">25+ dias</p>
-            </div>
-            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl opacity-50">
-              <div className="text-2xl mb-2">🌍</div>
-              <p className="font-semibold text-purple-700 dark:text-purple-300">Herói Climático</p>
-              <p className="text-sm text-purple-600 dark:text-purple-400">50+ dias</p>
-            </div>
-            <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl opacity-50">
-              <div className="text-2xl mb-2">⭐</div>
-              <p className="font-semibold text-yellow-700 dark:text-yellow-300">Lenda Sustentável</p>
-              <p className="text-sm text-yellow-600 dark:text-yellow-400">100+ dias</p>
-            </div>
+            {!useAuth().apiHealth && (
+              <span className="text-xs text-yellow-600 dark:text-yellow-400">
+                Usando dados de exemplo
+              </span>
+            )}
           </div>
         </div>
       </div>

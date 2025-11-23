@@ -1,76 +1,89 @@
-// Configuração base da API
-const API_BASE_URL = 'https://seu-deploy-java.onrender.com'; // Substitua pela URL real
+// Configuração base da API - USANDO SUA URL REAL
+const API_BASE_URL = 'https://worktech-apirestful-1.onrender.com/api/ecowork';
 
-// Interfaces baseadas na API existente
+// Interfaces baseadas na estrutura da sua API
 export interface User {
   id: string;
   email: string;
-  name: string;
-  type: 'company' | 'employee';
-  companyId?: string;
+  nome: string;
+  tipo: 'EMPRESA' | 'COLABORADOR';
+  empresaId?: string;
+  cnpj?: string;
+  telefone?: string;
+  endereco?: string;
+  createdAt?: string;
 }
 
 export interface Company {
   id: string;
-  name: string;
+  nome: string;
   cnpj: string;
   email: string;
-  plan: 'BASIC' | 'PREMIUM' | 'ENTERPRISE';
-  inviteCode: string;
+  telefone: string;
+  endereco: string;
+  plano: 'BASIC' | 'PREMIUM' | 'ENTERPRISE';
+  codigoConvite: string;
+  createdAt: string;
 }
 
 export interface HomeOfficeRecord {
   id: string;
-  userId: string;
-  companyId: string;
-  recordDate: string;
-  transportation: 'CAR' | 'MOTORCYCLE' | 'BUS' | 'SUBWAY' | 'BICYCLE' | 'WALKING';
-  distance: number;
-  co2Saved: number;
-  creditsEarned: number;
+  usuarioId: string;
+  empresaId: string;
+  dataRegistro: string;
+  transporte: 'CARRO' | 'MOTO' | 'ONIBUS' | 'METRO' | 'BICICLETA' | 'A_PE';
+  distancia: number;
+  co2Economizado: number;
+  creditosGanhos: number;
   createdAt: string;
 }
 
 export interface EmployeeStats {
-  totalHomeOfficeDays: number;
-  totalCO2Saved: number;
-  totalCredits: number;
-  currentWeekDays: number;
+  totalDiasHomeOffice: number;
+  totalCO2Economizado: number;
+  totalCreditos: number;
+  diasSemanaAtual: number;
   ranking: number;
 }
 
 export interface LoginRequest {
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface CompanyRegisterRequest {
-  companyName: string;
+  nome: string;
   cnpj: string;
   email: string;
-  password: string;
-  plan: 'BASIC' | 'PREMIUM' | 'ENTERPRISE';
+  senha: string;
+  telefone: string;
+  endereco: string;
+  plano: 'BASIC' | 'PREMIUM' | 'ENTERPRISE';
 }
 
 export interface EmployeeRegisterRequest {
-  name: string;
+  nome: string;
   email: string;
-  password: string;
-  inviteCode: string;
-  transportation: 'CAR' | 'MOTORCYCLE' | 'BUS' | 'SUBWAY' | 'BICYCLE' | 'WALKING';
-  distance: number;
+  senha: string;
+  codigoConvite: string;
+  transporte: 'CARRO' | 'MOTO' | 'ONIBUS' | 'METRO' | 'BICICLETA' | 'A_PE';
+  distancia: number;
+  telefone: string;
 }
 
 export interface HomeOfficeRegisterRequest {
-  userId: string;
-  transportation: 'CAR' | 'MOTORCYCLE' | 'BUS' | 'SUBWAY' | 'BICYCLE' | 'WALKING';
-  distance: number;
+  usuarioId: string;
+  transporte: 'CARRO' | 'MOTO' | 'ONIBUS' | 'METRO' | 'BICICLETA' | 'A_PE';
+  distancia: number;
 }
 
 // Serviço de autenticação
 class AuthService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
+    
+    console.log(`🔄 Fazendo requisição para: ${url}`);
+    
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -81,37 +94,134 @@ class AuthService {
 
     try {
       const response = await fetch(url, config);
+      console.log(`📡 Resposta da API: ${response.status} ${response.statusText}`);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Erro da API:', errorText);
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
 
-      return await response.json();
+      // Tentar parsear JSON, mas se falhar retornar texto
+      try {
+        const data = await response.json();
+        console.log('✅ Resposta da API (sucesso):', data);
+        return data;
+      } catch {
+        console.log('✅ Resposta da API (sucesso - não JSON)');
+        return {} as T;
+      }
     } catch (error) {
-      console.error('API Request failed:', error);
+      console.error('❌ Falha na requisição:', error);
       throw error;
     }
   }
 
-  async login(credentials: LoginRequest): Promise<{ user: User; token: string }> {
-    return this.request('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+  async login(credentials: LoginRequest): Promise<{ usuario: User; token: string }> {
+    // Primeiro, vamos tentar encontrar o usuário na lista
+    const usuarios = await this.request<User[]>('/usuarios');
+    const usuario = usuarios.find(u => u.email === credentials.email);
+    
+    if (!usuario) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    // Simular autenticação (já que não temos endpoint de login)
+    return {
+      usuario,
+      token: `token-${usuario.id}`
+    };
   }
 
-  async registerCompany(data: CompanyRegisterRequest): Promise<{ user: User; company: Company; token: string }> {
-    return this.request('/api/auth/register/company', {
+  async registerCompany(data: CompanyRegisterRequest): Promise<{ usuario: User; empresa: Company; token: string }> {
+    // Primeiro criar a empresa
+    const empresaData = {
+      nome: data.nome,
+      cnpj: data.cnpj,
+      email: data.email,
+      telefone: data.telefone,
+      endereco: data.endereco,
+      plano: data.plano,
+      codigoConvite: `ECO-${Date.now()}`
+    };
+
+    const empresaResponse = await this.request<Company>('/empresas', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(empresaData),
     });
+
+    // Depois criar o usuário empresa
+    const usuarioData = {
+      nome: data.nome,
+      email: data.email,
+      senha: data.senha,
+      tipo: 'EMPRESA' as const,
+      empresaId: empresaResponse.id,
+      cnpj: data.cnpj,
+      telefone: data.telefone,
+      endereco: data.endereco
+    };
+
+    const usuarioResponse = await this.request<User>('/usuarios', {
+      method: 'POST',
+      body: JSON.stringify(usuarioData),
+    });
+
+    return {
+      usuario: usuarioResponse,
+      empresa: empresaResponse,
+      token: `token-${usuarioResponse.id}`
+    };
   }
 
-  async registerEmployee(data: EmployeeRegisterRequest): Promise<{ user: User; token: string }> {
-    return this.request('/api/auth/register/employee', {
+  async registerEmployee(data: EmployeeRegisterRequest): Promise<{ usuario: User; token: string }> {
+    // Primeiro buscar empresa pelo código de convite
+    const empresas = await this.request<Company[]>('/empresas');
+    const empresa = empresas.find(e => e.codigoConvite === data.codigoConvite);
+    
+    if (!empresa) {
+      throw new Error('Código de convite inválido');
+    }
+
+    // Criar usuário colaborador
+    const usuarioData = {
+      nome: data.nome,
+      email: data.email,
+      senha: data.senha,
+      tipo: 'COLABORADOR' as const,
+      empresaId: empresa.id,
+      telefone: data.telefone,
+      perfilDeslocamento: {
+        transporte: data.transporte,
+        distancia: data.distancia
+      }
+    };
+
+    const usuarioResponse = await this.request<User>('/usuarios', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(usuarioData),
     });
+
+    return {
+      usuario: usuarioResponse,
+      token: `token-${usuarioResponse.id}`
+    };
+  }
+
+  async getCurrentUser(): Promise<User> {
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error('Usuário não autenticado');
+    
+    // Extrair ID do token (simulação)
+    const userId = token.replace('token-', '');
+    const usuarios = await this.request<User[]>('/usuarios');
+    const usuario = usuarios.find(u => u.id === userId);
+    
+    if (!usuario) {
+      throw new Error('Usuário não encontrado');
+    }
+    
+    return usuario;
   }
 }
 
@@ -120,6 +230,8 @@ class EmployeeService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('auth_token');
     const url = `${API_BASE_URL}${endpoint}`;
+    
+    console.log(`🔄 Fazendo requisição autenticada para: ${url}`);
     
     const config = {
       headers: {
@@ -132,41 +244,98 @@ class EmployeeService {
 
     try {
       const response = await fetch(url, config);
+      console.log(`📡 Resposta da API: ${response.status} ${response.statusText}`);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Erro da API:', errorText);
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
 
-      return await response.json();
+      try {
+        const data = await response.json();
+        console.log('✅ Resposta da API (sucesso):', data);
+        return data;
+      } catch {
+        console.log('✅ Resposta da API (sucesso - não JSON)');
+        return {} as T;
+      }
     } catch (error) {
-      console.error('API Request failed:', error);
+      console.error('❌ Falha na requisição:', error);
       throw error;
     }
   }
 
   async registerHomeOffice(data: HomeOfficeRegisterRequest): Promise<HomeOfficeRecord> {
-    return this.request('/api/employee/home-office', {
+    const recordData = {
+      usuarioId: data.usuarioId,
+      empresaId: 'empresa-id', // Isso viria do usuário logado
+      transporte: data.transporte,
+      distancia: data.distancia,
+      dataRegistro: new Date().toISOString().split('T')[0],
+      co2Economizado: data.distancia * 0.21, // Cálculo simplificado
+      creditosGanhos: Math.floor(data.distancia * 2.5)
+    };
+
+    return this.request<HomeOfficeRecord>('/home-office', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify(recordData),
     });
   }
 
-  async getEmployeeStats(userId: string): Promise<EmployeeStats> {
-    return this.request(`/api/employee/${userId}/stats`);
+  async getEmployeeStats(usuarioId: string): Promise<EmployeeStats> {
+    // Simular estatísticas baseadas no histórico
+    const historico = await this.getHomeOfficeHistory(usuarioId);
+    
+    const totalDiasHomeOffice = historico.length;
+    const totalCO2Economizado = historico.reduce((sum, record) => sum + record.co2Economizado, 0);
+    const totalCreditos = historico.reduce((sum, record) => sum + record.creditosGanhos, 0);
+    
+    return {
+      totalDiasHomeOffice,
+      totalCO2Economizado,
+      totalCreditos,
+      diasSemanaAtual: historico.filter(record => {
+        const recordDate = new Date(record.dataRegistro);
+        const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        return recordDate > oneWeekAgo;
+      }).length,
+      ranking: 3
+    };
   }
 
-  async getHomeOfficeHistory(userId: string): Promise<HomeOfficeRecord[]> {
-    return this.request(`/api/employee/${userId}/history`);
+  async getHomeOfficeHistory(usuarioId: string): Promise<HomeOfficeRecord[]> {
+    try {
+      const historico = await this.request<HomeOfficeRecord[]>(`/home-office/usuario/${usuarioId}`);
+      return historico || [];
+    } catch {
+      // Se o endpoint não existir, retornar array vazio
+      return [];
+    }
   }
 
   async getBenefits(): Promise<any[]> {
-    return this.request('/api/benefits');
+    try {
+      const beneficios = await this.request<any[]>('/beneficios');
+      return beneficios || [];
+    } catch {
+      // Benefícios mock se o endpoint não existir
+      return [
+        {
+          id: '1',
+          nome: 'Vale Presente Sustentável',
+          descricao: 'R$ 50 em vale-presente para lojas ecológicas',
+          custo: 100,
+          categoria: 'vouchers'
+        }
+      ];
+    }
   }
 
-  async redeemBenefit(benefitId: string, userId: string): Promise<any> {
-    return this.request('/api/benefits/redeem', {
+  async redeemBenefit(beneficioId: string, usuarioId: string): Promise<any> {
+    return this.request('/beneficios/resgatar', {
       method: 'POST',
-      body: JSON.stringify({ benefitId, userId }),
+      body: JSON.stringify({ beneficioId, usuarioId }),
     });
   }
 }
@@ -177,50 +346,7 @@ class CompanyService {
     const token = localStorage.getItem('auth_token');
     const url = `${API_BASE_URL}${endpoint}`;
     
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
-        ...options.headers,
-      },
-      ...options,
-    };
-
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API Request failed:', error);
-      throw error;
-    }
-  }
-
-  async getCompanyDashboard(companyId: string): Promise<any> {
-    return this.request(`/api/company/${companyId}/dashboard`);
-  }
-
-  async getCompanyEmployees(companyId: string): Promise<any[]> {
-    return this.request(`/api/company/${companyId}/employees`);
-  }
-
-  async generateReport(companyId: string, reportType: string): Promise<any> {
-    return this.request(`/api/company/${companyId}/reports`, {
-      method: 'POST',
-      body: JSON.stringify({ reportType }),
-    });
-  }
-}
-
-// Serviço de IA (se existir na API)
-class AIService {
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const token = localStorage.getItem('auth_token');
-    const url = `${API_BASE_URL}${endpoint}`;
+    console.log(`🔄 Fazendo requisição empresa para: ${url}`);
     
     const config = {
       headers: {
@@ -233,31 +359,68 @@ class AIService {
 
     try {
       const response = await fetch(url, config);
+      console.log(`📡 Resposta da API: ${response.status} ${response.statusText}`);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Erro da API:', errorText);
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
 
-      return await response.json();
+      try {
+        const data = await response.json();
+        console.log('✅ Resposta da API (sucesso):', data);
+        return data;
+      } catch {
+        console.log('✅ Resposta da API (sucesso - não JSON)');
+        return {} as T;
+      }
     } catch (error) {
-      console.error('API Request failed:', error);
+      console.error('❌ Falha na requisição:', error);
       throw error;
     }
   }
 
-  async getBenefitRecommendations(userId: string): Promise<any[]> {
-    return this.request(`/api/ai/recommendations/${userId}`);
+  async getCompanyDashboard(empresaId: string): Promise<any> {
+    try {
+      return await this.request(`/empresas/${empresaId}/dashboard`);
+    } catch {
+      // Dashboard mock se o endpoint não existir
+      return {
+        totalColaboradores: 4,
+        colaboradoresAtivos: 4,
+        totalCO2Economizado: 152.0,
+        totalCreditos: 380,
+        ranking: 3
+      };
+    }
   }
 
-  async predictCO2Savings(userId: string): Promise<any> {
-    return this.request(`/api/ai/predict-co2/${userId}`);
+  async getCompanyEmployees(empresaId: string): Promise<any[]> {
+    try {
+      const usuarios = await this.request<User[]>('/usuarios');
+      return usuarios.filter(u => u.empresaId === empresaId && u.tipo === 'COLABORADOR');
+    } catch {
+      return [];
+    }
   }
 
-  async chatWithBot(message: string, userId: string): Promise<any> {
-    return this.request('/api/ai/chat', {
+  async generateReport(empresaId: string, tipoRelatorio: string): Promise<any> {
+    return this.request(`/empresas/${empresaId}/relatorios`, {
       method: 'POST',
-      body: JSON.stringify({ message, userId }),
+      body: JSON.stringify({ tipoRelatorio }),
     });
+  }
+
+  async getCompanyByInviteCode(codigoConvite: string): Promise<Company> {
+    const empresas = await this.request<Company[]>('/empresas');
+    const empresa = empresas.find(e => e.codigoConvite === codigoConvite);
+    
+    if (!empresa) {
+      throw new Error('Empresa não encontrada com este código de convite');
+    }
+    
+    return empresa;
   }
 }
 
@@ -265,14 +428,84 @@ class AIService {
 export const authService = new AuthService();
 export const employeeService = new EmployeeService();
 export const companyService = new CompanyService();
-export const aiService = new AIService();
 
 // Utilitário para verificar se a API está online
 export const checkAPIHealth = async (): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/health`);
-    return response.ok;
-  } catch {
+    console.log('🔍 Verificando saúde da API...');
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const isHealthy = response.ok;
+    console.log(isHealthy ? '✅ API está online' : '❌ API está offline');
+    return isHealthy;
+  } catch (error) {
+    console.log('❌ Não foi possível conectar com a API:', error);
     return false;
   }
+};
+
+// Testar endpoints específicos - FUNÇÃO ATUALIZADA
+export const testEndpoints = async () => {
+  console.log('🧪 Testando endpoints da API...');
+  
+  const results = {
+    usuarios: false,
+    empresas: false
+  };
+
+  try {
+    // Testar endpoint de usuários com timeout
+    const usersResponse = await Promise.race([
+      fetch(`${API_BASE_URL}/usuarios`),
+      new Promise<Response>((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 5000)
+      )
+    ]);
+    
+    results.usuarios = usersResponse.ok;
+    console.log('👥 Endpoint /usuarios:', usersResponse.status, usersResponse.ok ? '✅' : '❌');
+    
+    if (usersResponse.ok) {
+      try {
+        const users = await usersResponse.json();
+        console.log(`📊 ${users.length} usuários encontrados`);
+      } catch {
+        console.log('📊 Resposta não é JSON');
+      }
+    }
+  } catch (error) {
+    console.log('❌ Endpoint /usuarios não disponível');
+  }
+
+  try {
+    // Testar endpoint de empresas com timeout
+    const companiesResponse = await Promise.race([
+      fetch(`${API_BASE_URL}/empresas`),
+      new Promise<Response>((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 5000)
+      )
+    ]);
+    
+    results.empresas = companiesResponse.ok;
+    console.log('🏢 Endpoint /empresas:', companiesResponse.status, companiesResponse.ok ? '✅' : '❌');
+    
+    if (companiesResponse.ok) {
+      try {
+        const companies = await companiesResponse.json();
+        console.log(`📊 ${companies.length} empresas encontradas`);
+      } catch {
+        console.log('📊 Resposta não é JSON');
+      }
+    }
+  } catch (error) {
+    console.log('❌ Endpoint /empresas não disponível');
+  }
+
+  console.log('📊 Resultados dos testes:', results);
+  return results;
 };

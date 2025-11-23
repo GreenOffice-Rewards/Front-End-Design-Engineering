@@ -4,6 +4,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import APIDebug from './components/APIDebug'
 import Home from './pages/Home'
 import About from './pages/About'
 import Team from './pages/Team'
@@ -87,12 +88,16 @@ function AppContent() {
 
                 {/* Redirecionamentos */}
                 <Route path="/register" element={
-                  <div className="min-h-screen flex items-center justify-center">
-                    <div className="text-center">
-                      <h2 className="text-2xl font-bold mb-4">Escolha o tipo de cadastro</h2>
-                      <div className="space-x-4">
-                        <a href="/register/company" className="btn-primary">Sou Empresa</a>
-                        <a href="/register/employee" className="btn-secondary">Sou Colaborador</a>
+                  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                    <div className="text-center bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+                      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Escolha o tipo de cadastro</h2>
+                      <div className="space-y-4">
+                        <a href="/register/company" className="block bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                          Sou Empresa
+                        </a>
+                        <a href="/register/employee" className="block border border-green-500 text-green-500 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 dark:hover:bg-gray-700 transition-colors">
+                          Sou Colaborador
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -102,6 +107,9 @@ function AppContent() {
               </Routes>
             </main>
             <Footer />
+            
+            {/* Debug da API (apenas em desenvolvimento) */}
+            {process.env.NODE_ENV === 'development' && <APIDebug />}
           </>
         } />
       </Routes>
