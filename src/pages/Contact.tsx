@@ -56,8 +56,8 @@ const Contact: React.FC = () => {
             Entre em Contato
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Pronto para transformar sustentabilidade em vantagem competitiva? 
-            Entre em contato conosco e descubra como o GreenOffice Rewards pode ajudar sua empresa.
+            Pronto para transformar sustentabilidade em vantagem competitiva?
+            Entre em contato conosco e descubra como o EcoWork pode ajudar sua empresa.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ const Contact: React.FC = () => {
                       Email
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      contato@greenofficerewards.com
+                      contato@ecowork.com
                     </p>
                     <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
                       Respondemos em até 24h
@@ -134,12 +134,12 @@ const Contact: React.FC = () => {
                       LinkedIn
                     </h3>
                     <a 
-                      href="https://linkedin.com/company/greenofficerewards"
+                      href="https://linkedin.com/company/ecowork"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
                     >
-                      @greenofficerewards
+                      @ecowork
                     </a>
                     <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">
                       Siga-nos para novidades

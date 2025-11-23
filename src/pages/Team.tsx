@@ -45,7 +45,7 @@ const Team: React.FC = () => {
             Nossa Equipe
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Conheça os desenvolvedores por trás do GreenOffice Rewards
+            Conheça os desenvolvedores por trás do EcoWork
           </p>
         </div>
 

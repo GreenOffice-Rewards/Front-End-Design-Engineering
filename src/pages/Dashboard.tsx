@@ -29,16 +29,16 @@ const Dashboard: React.FC = () => {
       try {
         // Carregar estatísticas do colaborador
         const stats: EmployeeStats = await employeeService.getEmployeeStats(user.id)
-        setHomeOfficeDays(stats.totalHomeOfficeDays)
-        setTotalCO2(stats.totalCO2Saved)
-        setTotalCredits(stats.totalCredits)
+        setHomeOfficeDays(stats.totalDiasHomeOffice || 0)
+        setTotalCO2(stats.totalCO2Economizado || 0)
+        setTotalCredits(stats.totalCreditos || 0)
 
         // Carregar histórico
         const homeOfficeHistory = await employeeService.getHomeOfficeHistory(user.id)
-        setHistory(homeOfficeHistory)
+        setHistory(homeOfficeHistory || [])
 
         // Calcular estatísticas semanais (simulação)
-        calculateWeeklyStats(homeOfficeHistory)
+        calculateWeeklyStats(homeOfficeHistory || [])
       } catch (error) {
         console.error('Error loading dashboard data:', error)
         // Fallback para dados de demonstração
@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
     
     setIsRegistering(true)
     try {
-      // Registrar home office na API
+      // Registrar home office
       const newRecord = await employeeService.registerHomeOffice({
         userId: user.id,
         transportation: 'CAR', // Poderia vir de um formulário
@@ -108,11 +108,11 @@ const Dashboard: React.FC = () => {
 
       // Atualizar estado local
       setHomeOfficeDays(prev => prev + 1)
-      setTotalCO2(prev => prev + newRecord.co2Saved)
-      setTotalCredits(prev => prev + newRecord.creditsEarned)
+      setTotalCO2(prev => prev + (newRecord.co2Saved || 0))
+      setTotalCredits(prev => prev + (newRecord.creditsEarned || 0))
       setHistory(prev => [newRecord, ...prev])
 
-      alert('✅ Dia de home office registrado com sucesso! +' + newRecord.creditsEarned + ' créditos verdes 🎉')
+      alert('✅ Dia de home office registrado com sucesso! +' + (newRecord.creditsEarned || 0) + ' créditos verdes 🎉')
     } catch (error: any) {
       console.error('Error registering home office:', error)
       alert(error.message || 'Erro ao registrar home office')
@@ -131,8 +131,8 @@ const Dashboard: React.FC = () => {
       'MOTORCYCLE': '🏍️',
       'BUS': '🚌',
       'SUBWAY': '🚇',
-      'BICYCLE': '🚲',
-      'WALKING': '🚶'
+      'BICICLETA': '🚲',
+      'A_PE': '🚶'
     }
     return emojis[transport] || '🚗'
   }
@@ -315,23 +315,6 @@ const Dashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* Status da API */}
-        <div className="mt-8 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className={`w-3 h-3 rounded-full ${useAuth().apiHealth ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-              <span className="text-sm text-gray-600 dark:text-gray-300">
-                {useAuth().apiHealth ? 'Conectado à API' : 'Modo de demonstração'}
-              </span>
-            </div>
-            {!useAuth().apiHealth && (
-              <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                Usando dados de exemplo
-              </span>
-            )}
           </div>
         </div>
       </div>

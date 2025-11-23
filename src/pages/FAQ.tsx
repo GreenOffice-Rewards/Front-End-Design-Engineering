@@ -39,7 +39,7 @@ const FAQ: React.FC = () => {
             Perguntas Frequentes
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Tire suas dúvidas sobre o GreenOffice Rewards
+            Tire suas dúvidas sobre o EcoWork
           </p>
         </div>
 
