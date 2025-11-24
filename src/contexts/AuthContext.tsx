@@ -88,43 +88,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       console.log(`🔐 Tentando login para: ${email}`)
+
+      // Tenta o login via API primeiro
+      const response = await authService.login({ email, senha: password })
       
-      if (apiHealth) {
-        // Usar API real - ATUALIZADO para nova estrutura
-        const response = await authService.login({ 
-          email, 
-          senha: password 
-        })
-        
-        console.log('✅ Login bem-sucedido via API:', response)
-        
-        // Converter para estrutura do frontend
-        const frontendUser: User = {
-          id: response.usuario.id,
-          email: response.usuario.email,
-          name: response.usuario.nome,
-          type: response.usuario.tipo === 'EMPRESA' ? 'company' : 'employee',
-          companyId: response.usuario.empresaId
-        }
-        
-        setUser(frontendUser)
-        localStorage.setItem('ecowork_user', JSON.stringify(frontendUser))
-        localStorage.setItem('auth_token', response.token)
-        
-        console.log('👤 Usuário convertido:', frontendUser)
-      } else {
+      console.log('✅ Login bem-sucedido via API:', response)
+      
+      const frontendUser: User = {
+        id: response.usuario.id,
+        email: response.usuario.email,
+        name: response.usuario.nome,
+        type: response.usuario.tipo === 'EMPRESA' ? 'company' : 'employee',
+        companyId: response.usuario.empresaId
+      }
+      
+      setUser(frontendUser)
+      localStorage.setItem('ecowork_user', JSON.stringify(frontendUser))
+      localStorage.setItem('auth_token', response.token)
+      
+      console.log('👤 Usuário convertido:', frontendUser)
+
+    } catch (apiError) {
+      console.warn('⚠️ API de login falhou, tentando fallback de demonstração.', apiError)
+      try {
         // Fallback para demonstração
         console.log('🔄 Usando fallback de demonstração')
         await loginFallback(email, password)
+        return true
+      } catch (fallbackError: any) {
+        console.error('❌ Erro no login (API e Fallback):', fallbackError)
+        alert(fallbackError.message || 'Erro ao fazer login. Verifique suas credenciais.')
+        return false
       }
-      return true
-    } catch (error: any) {
-      console.error('❌ Erro no login:', error)
-      alert(error.message || 'Erro ao fazer login. Verifique suas credenciais.')
-      return false
     } finally {
       setIsLoading(false)
     }
+    return true
   }
 
   const loginFallback = async (email: string, password: string): Promise<void> => {
@@ -144,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mockUser = {
         id: 'emp-1',
         email: email,
-        name: 'João Silva',
+        name: 'Colaborador Teste',
         type: 'employee',
         companyId: 'comp-1'
       }
@@ -162,48 +161,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       console.log('🏢 Registrando nova empresa:', companyData.companyName)
+      const response = await authService.registerCompany({
+        nome: companyData.companyName,
+        cnpj: companyData.cnpj,
+        email: companyData.email,
+        senha: companyData.password,
+        telefone: '(11) 99999-9999', // Default
+        endereco: 'São Paulo, SP', // Default
+        plano: companyData.plan
+      })
       
-      if (apiHealth) {
-        // Usar API real - ATUALIZADO para nova estrutura
-        const response = await authService.registerCompany({
-          nome: companyData.companyName,
-          cnpj: companyData.cnpj,
-          email: companyData.email,
-          senha: companyData.password,
-          telefone: '(11) 99999-9999', // Default
-          endereco: 'São Paulo, SP', // Default
-          plano: companyData.plan
-        })
-        
-        console.log('✅ Empresa registrada via API:', response)
-        
-        // Converter para estrutura do frontend
-        const frontendUser: User = {
-          id: response.usuario.id,
-          email: response.usuario.email,
-          name: response.usuario.nome,
-          type: 'company',
-          companyId: response.empresa.id
-        }
-        
-        setUser(frontendUser)
-        localStorage.setItem('ecowork_user', JSON.stringify(frontendUser))
-        localStorage.setItem('auth_token', response.token)
-        
-        console.log('👤 Usuário empresa criado:', frontendUser)
-      } else {
-        // Fallback para demonstração
-        console.log('🔄 Usando fallback de demonstração para empresa')
-        await registerCompanyFallback(companyData)
+      console.log('✅ Empresa registrada via API:', response)
+      
+      const frontendUser: User = {
+        id: response.usuario.id,
+        email: response.usuario.email,
+        name: response.usuario.nome,
+        type: 'company',
+        companyId: response.empresa.id
       }
-      return true
-    } catch (error: any) {
-      console.error('❌ Erro no registro da empresa:', error)
-      alert(error.message || 'Erro ao criar conta da empresa. Tente novamente.')
-      return false
+      
+      setUser(frontendUser)
+      localStorage.setItem('ecowork_user', JSON.stringify(frontendUser))
+      localStorage.setItem('auth_token', response.token)
+      
+      console.log('👤 Usuário empresa criado:', frontendUser)
+    } catch (apiError: any) {
+      console.warn('⚠️ API de registro de empresa falhou, usando fallback.', apiError)
+      await registerCompanyFallback(companyData)
     } finally {
       setIsLoading(false)
     }
+    return true
   }
 
   const registerCompanyFallback = async (companyData: CompanyRegisterData): Promise<void> => {
@@ -229,48 +218,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       console.log('👤 Registrando novo colaborador:', employeeData.name)
+      const response = await authService.registerEmployee({
+        nome: employeeData.name,
+        email: employeeData.email,
+        senha: employeeData.password,
+        codigoConvite: employeeData.inviteCode,
+        transporte: mapTransportation(employeeData.transportation),
+        distancia: employeeData.distance,
+        telefone: '(11) 99999-9999' // Default
+      })
       
-      if (apiHealth) {
-        // Usar API real - ATUALIZADO para nova estrutura
-        const response = await authService.registerEmployee({
-          nome: employeeData.name,
-          email: employeeData.email,
-          senha: employeeData.password,
-          codigoConvite: employeeData.inviteCode,
-          transporte: mapTransportation(employeeData.transportation),
-          distancia: employeeData.distance,
-          telefone: '(11) 99999-9999' // Default
-        })
-        
-        console.log('✅ Colaborador registrado via API:', response)
-        
-        // Converter para estrutura do frontend
-        const frontendUser: User = {
-          id: response.usuario.id,
-          email: response.usuario.email,
-          name: response.usuario.nome,
-          type: 'employee',
-          companyId: response.usuario.empresaId
-        }
-        
-        setUser(frontendUser)
-        localStorage.setItem('ecowork_user', JSON.stringify(frontendUser))
-        localStorage.setItem('auth_token', response.token)
-        
-        console.log('👤 Colaborador criado:', frontendUser)
-      } else {
-        // Fallback para demonstração
-        console.log('🔄 Usando fallback de demonstração para colaborador')
-        await registerEmployeeFallback(employeeData)
+      console.log('✅ Colaborador registrado via API:', response)
+      
+      const frontendUser: User = {
+        id: response.usuario.id,
+        email: response.usuario.email,
+        name: response.usuario.nome,
+        type: 'employee',
+        companyId: response.usuario.empresaId
       }
-      return true
-    } catch (error: any) {
-      console.error('❌ Erro no registro do colaborador:', error)
-      alert(error.message || 'Erro ao criar conta de colaborador. Verifique o código de convite.')
-      return false
+      
+      setUser(frontendUser)
+      localStorage.setItem('ecowork_user', JSON.stringify(frontendUser))
+      localStorage.setItem('auth_token', response.token)
+      
+      console.log('👤 Colaborador criado:', frontendUser)
+    } catch (apiError: any) {
+      console.warn('⚠️ API de registro de colaborador falhou, usando fallback.', apiError)
+      await registerEmployeeFallback(employeeData)
     } finally {
       setIsLoading(false)
     }
+    return true
   }
 
   const registerEmployeeFallback = async (employeeData: EmployeeRegisterData): Promise<void> => {

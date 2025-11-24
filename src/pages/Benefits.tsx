@@ -1,95 +1,56 @@
 import React, { useState, useEffect } from 'react'
 import { Benefit } from '../types'
+import { useAuth } from '../contexts/AuthContext'
+import { employeeService } from '../services/api'
 
 const Benefits: React.FC = () => {
+  const { user } = useAuth()
   const [benefits, setBenefits] = useState<Benefit[]>([])
   const [filteredBenefits, setFilteredBenefits] = useState<Benefit[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [userCredits, setUserCredits] = useState<number>(150) // Créditos do usuário
+  const [userCredits, setUserCredits] = useState<number>(0)
   const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Mock data - substituir por API real
+  // Carregar benefícios e créditos do usuário
   useEffect(() => {
-    const mockBenefits: Benefit[] = [
-      {
-        id: '1',
-        name: 'Vale Presente Sustentável',
-        description: 'R$ 50 em vale-presente para lojas ecológicas e sustentáveis',
-        cost: 100,
-        category: 'vouchers',
-        image: '🎁',
-        featured: true,
-        tags: ['popular', 'sustentável']
-      },
-      {
-        id: '2',
-        name: 'Doação para ONG Ambiental',
-        description: 'Faça uma doação em seu nome para uma organização de proteção ambiental',
-        cost: 50,
-        category: 'doacoes',
-        image: '🌳',
-        tags: ['impacto', 'social']
-      },
-      {
-        id: '3',
-        name: 'Kit Produtos Ecológicos',
-        description: 'Kit com produtos sustentáveis para o dia a dia',
-        cost: 120,
-        category: 'produtos',
-        image: '🛍️',
-        tags: ['produto', 'ecológico']
-      },
-      {
-        id: '4',
-        name: 'Curso de Sustentabilidade',
-        description: 'Acesso a curso online sobre práticas sustentáveis',
-        cost: 80,
-        category: 'educacao',
-        image: '📚',
-        tags: ['aprendizado', 'digital']
-      },
-      {
-        id: '5',
-        name: 'Experiência na Natureza',
-        description: 'Passeio em parque nacional ou reserva ambiental',
-        cost: 200,
-        category: 'experiencias',
-        image: '🏞️',
-        featured: true,
-        tags: ['experiência', 'natureza']
-      },
-      {
-        id: '6',
-        name: 'Assinatura Revista Verde',
-        description: 'Assinatura digital de revista sobre sustentabilidade',
-        cost: 60,
-        category: 'assinaturas',
-        image: '📰',
-        tags: ['conhecimento', 'digital']
-      },
-      {
-        id: '7',
-        name: 'Plantio de Árvores',
-        description: 'Plantio de 5 árvores em seu nome em área de reflorestamento',
-        cost: 75,
-        category: 'doacoes',
-        image: '🌱',
-        tags: ['reflorestamento', 'impacto']
-      },
-      {
-        id: '8',
-        name: 'Eco Kit Office',
-        description: 'Kit com itens sustentáveis para home office',
-        cost: 150,
-        category: 'produtos',
-        image: '💻',
-        tags: ['home office', 'produto']
+    const loadBenefitsData = async () => {
+      setIsLoading(true)
+      try {
+        // Tenta buscar da API
+        const apiBenefits = await employeeService.getBenefits()
+        setBenefits(apiBenefits)
+        setFilteredBenefits(apiBenefits)
+        
+        // Simulação de busca de créditos do usuário
+        const stats = await employeeService.getEmployeeStats(user?.id || '')
+        setUserCredits(stats.totalCreditos)
+      } catch (error) {
+        console.warn('⚠️ API de benefícios falhou, usando dados de demonstração.', error)
+        loadDemoData()
+      } finally {
+        setIsLoading(false)
       }
-    ]
+    }
+    
+    loadBenefitsData()
+  }, [user])
 
+  const loadDemoData = () => {
+    const mockBenefits: Benefit[] = [
+      { id: '1', name: 'Vale Presente Sustentável', description: 'R$ 50 em vale-presente para lojas ecológicas.', cost: 100, category: 'vouchers', image: '🎁', featured: true, tags: ['popular', 'sustentável'] },
+      { id: '2', name: 'Doação para ONG Ambiental', description: 'Faça uma doação para uma organização de proteção ambiental.', cost: 50, category: 'doacoes', image: '🌳', tags: ['impacto', 'social'] },
+      { id: '3', name: 'Kit Produtos Ecológicos', description: 'Kit com produtos sustentáveis para o dia a dia.', cost: 120, category: 'produtos', image: '🛍️', tags: ['produto', 'ecológico'] },
+      { id: '4', name: 'Curso de Sustentabilidade', description: 'Acesso a curso online sobre práticas sustentáveis.', cost: 80, category: 'educacao', image: '📚', tags: ['aprendizado', 'digital'] },
+      { id: '5', name: 'Experiência na Natureza', description: 'Passeio em parque nacional ou reserva ambiental.', cost: 200, category: 'experiencias', image: '🏞️', featured: true, tags: ['experiência', 'natureza'] },
+      { id: '6', name: 'Assinatura Revista Verde', description: 'Assinatura digital de revista sobre sustentabilidade.', cost: 60, category: 'assinaturas', image: '📰', tags: ['conhecimento', 'digital'] },
+      { id: '7', name: 'Plantio de Árvores', description: 'Plantio de 5 árvores em seu nome em área de reflorestamento.', cost: 75, category: 'doacoes', image: '🌱', tags: ['reflorestamento', 'impacto'] },
+      { id: '8', name: 'Eco Kit Office', description: 'Kit com itens sustentáveis para home office.', cost: 150, category: 'produtos', image: '💻', tags: ['home office', 'produto'] }
+    ]
     setBenefits(mockBenefits)
     setFilteredBenefits(mockBenefits)
-  }, [])
+    setUserCredits(150) // Créditos de demonstração
+  }
 
   const categories = [
     { id: 'all', name: 'Todos', emoji: '🌟' },
@@ -124,6 +85,17 @@ const Benefits: React.FC = () => {
       alert(`🎉 Parabéns! Você resgatou: ${selectedBenefit.name}\n\nSeu benefício será processado em até 48h.`)
       setSelectedBenefit(null)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Carregando benefícios...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
