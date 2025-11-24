@@ -116,7 +116,7 @@ const Benefits: React.FC = () => {
         </div>
 
         {/* Saldo de Créditos */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-green-200 dark:border-green-800">
+        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-transparent bg-clip-padding before:absolute before:inset-0 before:-z-10 before:rounded-2xl before:bg-gradient-to-br before:from-green-200 before:to-emerald-300 dark:before:from-green-800 dark:before:to-emerald-700">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -216,7 +216,7 @@ const Benefits: React.FC = () => {
                     disabled={userCredits < benefit.cost}
                     className={`flex-1 ml-4 py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
                       userCredits >= benefit.cost
-                        ? 'bg-green-500 hover:bg-green-600 text-white hover:scale-105'
+                        ? 'bg-green-500 hover:bg-green-600 text-white hover:scale-105 shadow-md hover:shadow-lg'
                         : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                     }`}
                   >
