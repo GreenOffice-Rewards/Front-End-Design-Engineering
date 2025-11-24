@@ -120,7 +120,11 @@ const CompanyDashboard: React.FC = () => {
               </p>
             </div>
             <div className="mt-4 md:mt-0">
-              <button className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-colors">
+              <button 
+                disabled
+                title="Função em breve disponível"
+                className="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold transition-colors opacity-50 cursor-not-allowed"
+              >
                 📧 Convidar Colaboradores
               </button>
             </div>
@@ -230,7 +234,11 @@ const CompanyDashboard: React.FC = () => {
                   <p className="text-sm text-blue-600 dark:text-blue-400">Relatório mensal de sustentabilidade</p>
                 </button>
                 
-                <button className="w-full text-left p-3 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                <button 
+                  disabled
+                  title="Função em breve disponível"
+                  className="w-full text-left p-3 bg-green-50 dark:bg-green-900/20 rounded-xl transition-colors opacity-50 cursor-not-allowed"
+                >
                   <span className="font-semibold text-green-700 dark:text-green-300">👥 Convidar Time</span>
                   <p className="text-sm text-green-600 dark:text-green-400">Adicionar novos colaboradores</p>
                 </button>
