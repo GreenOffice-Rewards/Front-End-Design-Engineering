@@ -15,7 +15,7 @@ const Team: React.FC = () => {
       rm: "565187",
       turma: "1TDSPW",
       github: "https://github.com/guilisbooa",
-      linkedin: "https://linkedin.com/in/guilhermelisboa",
+      linkedin: "https://www.linkedin.com/in/guilhermelisboasilva/",
     },
     {
       name: "Icaro José dos Santos",
