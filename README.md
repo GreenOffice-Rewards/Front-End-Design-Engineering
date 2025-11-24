@@ -24,7 +24,7 @@
 |------|-----|-------|--------|----------|
 | **Guilherme Lisboa Silva** | 565187 | 1TDSPW | [@guilisbooa](https://github.com/guilisbooa) | [Guilherme Lisboa](https://www.linkedin.com/in/guilhermelisboasilva/) |
 | **Icaro José dos Santos** | 562403 | 1TDSPW | [@Icaro-Jose09](https://github.com/Icaro-Jose09) | [Icaro Santos](https://linkedin.com/in/icarojoao) |
-| **Richard Freitas de Sousa** | 566127 | 1TDSPW | [@vlonerickk](https://github.com/vlonerickk) | [Richard Freitas](https://linkedin.com/in/richardfreitas) |
+| **Richard Freitas de Sousa** | 566127 | 1TDSPW | [@vlonerickk](https://github.com/vlonerickk) | [Richard Freitas](https://linkedin.com/in/richard-freitas) |
 
 ---
 
