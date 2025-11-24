@@ -14,21 +14,21 @@ const Team: React.FC = () => {
       name: "Guilherme Lisboa Silva",
       rm: "565187",
       turma: "1TDSPW",
-      github: "https://github.com/guilhermelisboa",
+      github: "https://github.com/guilisbooa",
       linkedin: "https://linkedin.com/in/guilhermelisboa",
     },
     {
       name: "Icaro José dos Santos",
       rm: "562403",
       turma: "1TDSPW",
-      github: "https://github.com/icarojoao",
+      github: "https://github.com/Icaro-Jose09",
       linkedin: "https://linkedin.com/in/icarojoao",
     },
     {
       name: "Richard Freitas de Sousa",
       rm: "566127",
       turma: "1TDSPW",
-      github: "https://github.com/richardfreitas",
+      github: "https://github.com/vlonerickk",
       linkedin: "https://linkedin.com/in/richardfreitas",
     }
   ]
