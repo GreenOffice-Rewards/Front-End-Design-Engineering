@@ -83,7 +83,7 @@ const fallbackData = {
       id: '1',
       nome: 'Tech Solutions Ltda',
       email: 'empresa@teste.com',
-      tipo: 'EMPRESA',
+      tipo: 'EMPRESA' as const,
       empresaId: '1',
       cnpj: '12.345.678/0001-90',
       telefone: '(11) 99999-9999',
@@ -93,11 +93,11 @@ const fallbackData = {
       id: '2', 
       nome: 'João Silva',
       email: 'colaborador@teste.com',
-      tipo: 'COLABORADOR',
+      tipo: 'COLABORADOR' as const,
       empresaId: '1',
       telefone: '(11) 98888-8888'
     }
-  ],
+  ] as User[],
   empresas: [
     {
       id: '1',
@@ -178,11 +178,11 @@ class AuthService {
       case '/usuarios':
         return fallbackData.usuarios;
       case '/empresas':
-        return fallbackData.empresas;
-      case '/home-office':
+        return fallbackData.usuarios.filter(u => u.tipo === 'EMPRESA');
+      case '/registros':
         return fallbackData.homeOffice;
       default:
-        if (endpoint.startsWith('/home-office/usuario/')) {
+        if (endpoint.startsWith('/registros/usuario/')) {
           const usuarioId = endpoint.split('/').pop();
           return fallbackData.homeOffice.filter(record => record.usuarioId === usuarioId);
         }
@@ -253,12 +253,12 @@ class AuthService {
     // Usar fallback - não temos endpoints reais para registro
     console.log('👤 Registro de colaborador usando fallback');
     
-    // Verificar código de convite
-    const empresas = await this.request<Company[]>('/empresas');
+    // Verificar código de convite - buscar em fallbackData.empresas
+    const empresas = fallbackData.empresas;
     const empresa = empresas.find(e => e.codigoConvite === data.codigoConvite);
     
     if (!empresa) {
-      throw new Error('Código de convite inválido. Use: ECOWORK2025');
+      throw new Error(`Código de convite inválido. Use: ${fallbackData.empresas[0]?.codigoConvite || 'ECOWORK2025'}`);
     }
 
     const novoUsuario: User = {
@@ -294,6 +294,63 @@ class AuthService {
     }
     
     return usuario;
+  }
+
+  async getUsuarioById(id: string): Promise<User | null> {
+    console.log(`🔍 Buscando usuário por ID: ${id}`);
+    try {
+      const usuarios = await this.request<User[]>('/usuarios');
+      console.log(`📊 Total de usuários encontrados: ${usuarios.length}`);
+      const usuario = usuarios.find(u => u.id === id);
+      
+      if (!usuario) {
+        console.log(`⚠️ Usuário ${id} não encontrado na API, buscando no fallback`);
+        return fallbackData.usuarios.find(u => u.id === id) || null;
+      }
+      
+      console.log(`✅ Usuário ${id} encontrado:`, usuario);
+      return usuario;
+    } catch (error) {
+      console.error('❌ Erro ao buscar usuário, usando fallback:', error);
+      return fallbackData.usuarios.find(u => u.id === id) || null;
+    }
+  }
+
+  async getEmpresaById(id: string): Promise<Company | null> {
+    console.log(`🔍 Buscando empresa por ID: ${id}`);
+    try {
+      const usuarios = await this.request<User[]>('/usuarios');
+      console.log(`📊 Total de usuários encontrados: ${usuarios.length}`);
+      
+      const empresaUsuario = usuarios.find(u => 
+        u.tipo === 'EMPRESA' && (u.id === id || u.empresaId === id)
+      );
+      
+      if (!empresaUsuario) {
+        console.log(`⚠️ Empresa ${id} não encontrada na API, buscando no fallback`);
+        const empresaFallback = fallbackData.empresas.find(e => e.id === id);
+        return empresaFallback || null;
+      }
+
+      console.log(`✅ Empresa ${id} encontrada:`, empresaUsuario);
+      
+      const empresa: Company = {
+        id: empresaUsuario.empresaId || empresaUsuario.id,
+        nome: empresaUsuario.nome,
+        cnpj: empresaUsuario.cnpj || '',
+        email: empresaUsuario.email,
+        telefone: empresaUsuario.telefone || '',
+        endereco: empresaUsuario.endereco || '',
+        plano: 'BASIC',
+        codigoConvite: fallbackData.empresas[0]?.codigoConvite || 'ECOWORK2025',
+        createdAt: empresaUsuario.createdAt || new Date().toISOString()
+      };
+      
+      return empresa;
+    } catch (error) {
+      console.error('❌ Erro ao buscar empresa, usando fallback:', error);
+      return fallbackData.empresas.find(e => e.id === id) || null;
+    }
   }
 }
 
@@ -346,7 +403,7 @@ class EmployeeService {
 
   private getFallbackData(endpoint: string): any {
     switch (endpoint) {
-      case '/home-office':
+      case '/registros':
         return fallbackData.homeOffice;
       case '/beneficios':
         return [
@@ -366,7 +423,7 @@ class EmployeeService {
           }
         ];
       default:
-        if (endpoint.startsWith('/home-office/usuario/')) {
+        if (endpoint.startsWith('/registros/usuario/')) {
           const usuarioId = endpoint.split('/').pop();
           return fallbackData.homeOffice.filter(record => record.usuarioId === usuarioId);
         }
@@ -419,7 +476,7 @@ class EmployeeService {
 
   async getHomeOfficeHistory(usuarioId: string): Promise<HomeOfficeRecord[]> {
     try {
-      const historico = await this.request<HomeOfficeRecord[]>(`/home-office/usuario/${usuarioId}`);
+      const historico = await this.request<HomeOfficeRecord[]>(`/registros/usuario/${usuarioId}`);
       return historico || [];
     } catch {
       return [];
@@ -534,14 +591,25 @@ class CompanyService {
   }
 
   async getCompanyByInviteCode(codigoConvite: string): Promise<Company> {
-    const empresas = await this.request<Company[]>('/empresas');
-    const empresa = empresas.find(e => e.codigoConvite === codigoConvite);
+    const usuarios = await this.request<User[]>('/usuarios');
+    const empresa = usuarios.find(u => u.tipo === 'EMPRESA' && u.cnpj === codigoConvite);
     
     if (!empresa) {
       throw new Error('Empresa não encontrada com este código de convite');
     }
     
-    return empresa;
+    // Converter User para Company
+    return {
+      id: empresa.id,
+      nome: empresa.nome,
+      cnpj: empresa.cnpj || '',
+      email: empresa.email,
+      telefone: empresa.telefone || '',
+      endereco: empresa.endereco || '',
+      plano: 'BASIC',
+      codigoConvite: empresa.cnpj || '',
+      createdAt: empresa.createdAt || new Date().toISOString()
+    };
   }
 }
 
@@ -576,7 +644,7 @@ export const testEndpoints = async () => {
   
   const results = {
     usuarios: false,
-    empresas: false
+    registros: false
   };
 
   try {
@@ -598,21 +666,21 @@ export const testEndpoints = async () => {
   }
 
   try {
-    // Testar endpoint de empresas (pode não existir)
-    const companiesResponse = await fetch(`${API_BASE_URL}/empresas`);
-    results.empresas = companiesResponse.ok;
-    console.log('🏢 Endpoint /empresas:', companiesResponse.status, companiesResponse.ok ? '✅' : '❌');
+    // Testar endpoint de registros (que existe)
+    const registrosResponse = await fetch(`${API_BASE_URL}/registros`);
+    results.registros = registrosResponse.ok;
+    console.log('📝 Endpoint /registros:', registrosResponse.status, registrosResponse.ok ? '✅' : '❌');
     
-    if (companiesResponse.ok) {
+    if (registrosResponse.ok) {
       try {
-        const companies = await companiesResponse.json();
-        console.log(`📊 ${companies.length} empresas encontradas`);
+        const registros = await registrosResponse.json();
+        console.log(`📊 ${registros.length} registros encontrados`);
       } catch {
         console.log('📊 Resposta não é JSON');
       }
     }
   } catch (error) {
-    console.log('❌ Endpoint /empresas não disponível');
+    console.log('❌ Endpoint /registros não disponível');
   }
 
   console.log('📊 Resultados dos testes:', results);

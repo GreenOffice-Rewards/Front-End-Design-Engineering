@@ -24,9 +24,9 @@ const APIDebug: React.FC = () => {
         </div>
         
         <div className="flex items-center justify-between">
-          <span>Endpoint /empresas:</span>
-          <span className={apiEndpoints.empresas ? 'text-green-400' : 'text-red-400'}>
-            {apiEndpoints.empresas ? '✅' : '❌'}
+          <span>Endpoint /registros:</span>
+          <span className={apiEndpoints.registros ? 'text-green-400' : 'text-red-400'}>
+            {apiEndpoints.registros ? '✅' : '❌'}
           </span>
         </div>
         

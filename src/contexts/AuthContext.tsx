@@ -26,7 +26,7 @@ interface AuthContextType {
   logout: () => void
   isLoading: boolean
   apiHealth: boolean
-  apiEndpoints: { usuarios: boolean; empresas: boolean }
+  apiEndpoints: { usuarios: boolean; registros: boolean }
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [apiHealth, setApiHealth] = useState(false)
-  const [apiEndpoints, setApiEndpoints] = useState({ usuarios: false, empresas: false })
+  const [apiEndpoints, setApiEndpoints] = useState({ usuarios: false, registros: false })
 
   // Verificar saúde da API e autenticação
   useEffect(() => {
@@ -74,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('Erro na inicialização:', error)
         setApiHealth(false)
-        setApiEndpoints({ usuarios: false, empresas: false })
+        setApiEndpoints({ usuarios: false, registros: false })
       } finally {
         setIsLoading(false)
       }

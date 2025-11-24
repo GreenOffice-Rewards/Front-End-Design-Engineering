@@ -16,6 +16,8 @@ import Login from './pages/auth/Login'
 import RegisterCompany from './pages/auth/RegisterCompany'
 import RegisterEmployee from './pages/auth/RegisterEmployee'
 import CompanyDashboard from './pages/company/CompanyDashboard'
+import UsuarioDetalhes from './pages/UsuarioDetalhes'
+import EmpresaDetalhes from './pages/EmpresaDetalhes'
 
 // Componente para proteger rotas
 const ProtectedRoute: React.FC<{ children: React.ReactNode; requiredType?: 'company' | 'employee' }> = ({ 
@@ -86,6 +88,18 @@ function AppContent() {
                   </ProtectedRoute>
                 } />
 
+                {/* Rotas Dinâmicas - Global Solution 2025-2 */}
+                <Route path="/usuarios/:id" element={
+                  <ProtectedRoute>
+                    <UsuarioDetalhes />
+                  </ProtectedRoute>
+                } />
+                <Route path="/empresas/:id" element={
+                  <ProtectedRoute>
+                    <EmpresaDetalhes />
+                  </ProtectedRoute>
+                } />
+
                 {/* Redirecionamentos */}
                 <Route path="/register" element={
                   <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -108,8 +122,7 @@ function AppContent() {
             </main>
             <Footer />
             
-            {/* Debug da API (apenas em desenvolvimento) */}
-            {process.env.NODE_ENV === 'development' && <APIDebug />}
+            {/* Debug da API removido - API funcionando corretamente */}
           </>
         } />
       </Routes>
