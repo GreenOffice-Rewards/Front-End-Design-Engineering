@@ -29,7 +29,7 @@ const Team: React.FC = () => {
       rm: "566127",
       turma: "1TDSPW",
       github: "https://github.com/vlonerickk",
-      linkedin: "https://linkedin.com/in/richardfreitas",
+      linkedin: "https://linkedin.com/in/richard-freitas",
     }
   ]
 
