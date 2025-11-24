@@ -69,7 +69,7 @@ const Team: React.FC = () => {
                   href={member.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                  className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all transform hover:scale-125"
                 >
                   <span className="sr-only">GitHub</span>
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -81,7 +81,7 @@ const Team: React.FC = () => {
                   href={member.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                  className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all transform hover:scale-125"
                 >
                   <span className="sr-only">LinkedIn</span>
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
