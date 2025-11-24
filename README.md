@@ -63,8 +63,8 @@
 ### 1. Clone o Repositório
 
 \`\`\`bash
-git clone https://github.com/SEU-USUARIO/greenoffice-rewards.git
-cd greenoffice-rewards
+git clone https://github.com/GreenOffice-Rewards/Front-End-Design-Engineering.git
+cd Front-End-Design-Engineering
 \`\`\`
 
 ### 2. Instale as Dependências
@@ -273,7 +273,7 @@ greenoffice-rewards/
 ## 🎥 Vídeo de Demonstração
 
 📹 **Assista ao vídeo completo (3 minutos):**
-🔗 https://www.youtube.com/watch?v=dQw4w9WgXcQ
+🔗 https://youtu.be/NgkXdwwEONM
 
 ### O que é demonstrado:
 1. Navegação pelas páginas obrigatórias

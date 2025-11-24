@@ -346,12 +346,6 @@ const Dashboard: React.FC = () => {
                     <span className="text-green-600 dark:text-green-400">{stat.co2} kg CO₂ evitado</span>
                     <span className="text-yellow-600 dark:text-yellow-400">+{stat.credits} créditos</span>
                   </div>
-<div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2 overflow-hidden">
-  <div 
-    className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full"
-    style={{ width: `${Math.min((algum_valor / meta) * 100, 100)}%` }}
-  ></div>
-</div>
                   {/* Correção: Adicionado overflow-hidden e Math.min para limitar a barra */}
                   <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2 overflow-hidden">
                     <div
