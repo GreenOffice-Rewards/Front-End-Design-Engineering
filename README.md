@@ -22,9 +22,9 @@
 
 | Nome | RM | Turma | GitHub | LinkedIn |
 |------|-----|-------|--------|----------|
-| **João Silva** | RM123456 | 1TDSPO | [@joaosilva](https://github.com/joaosilva) | [João Silva](https://linkedin.com/in/joaosilva) |
-| **Maria Santos** | RM123457 | 1TDSPO | [@mariasantos](https://github.com/mariasantos) | [Maria Santos](https://linkedin.com/in/mariasantos) |
-| **Pedro Costa** | RM123458 | 1TDSPO | [@pedrocosta](https://github.com/pedrocosta) | [Pedro Costa](https://linkedin.com/in/pedrocosta) |
+| **Guilherme Lisboa Silva** | 565187 | 1TDSPW | [@guilhermelisboa](https://github.com/guilhermelisboa) | [Guilherme Lisboa](https://linkedin.com/in/guilhermelisboa) |
+| **Icaro José dos Santos** | 562403 | 1TDSPW | [@icarojoao](https://github.com/icarojoao) | [Icaro Santos](https://linkedin.com/in/icarojoao) |
+| **Richard Freitas de Sousa** | 566127 | 1TDSPW | [@richardfreitas](https://github.com/richardfreitas) | [Richard Freitas](https://linkedin.com/in/richardfreitas) |
 
 ---
 
