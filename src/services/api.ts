@@ -27,21 +27,21 @@ export interface Company {
 
 export interface HomeOfficeRecord {
   id: string;
-  usuarioId: string;
-  empresaId: string;
-  dataRegistro: string;
+  usuario_id: string;
+  empresa_id: string;
+  data_registro: string;
   transporte: 'CARRO' | 'MOTO' | 'ONIBUS' | 'METRO' | 'BICICLETA' | 'A_PE';
   distancia: number;
-  co2Economizado: number;
-  creditosGanhos: number;
-  createdAt: string;
+  co2_economizado: number;
+  creditos_ganhos: number;
+  created_at: string;
 }
 
 export interface EmployeeStats {
-  totalDiasHomeOffice: number;
-  totalCO2Economizado: number;
-  totalCreditos: number;
-  diasSemanaAtual: number;
+  total_dias_home_office: number;
+  total_co2_economizado: number;
+  total_creditos: number;
+  dias_semana_atual: number;
   ranking: number;
 }
 
@@ -114,14 +114,14 @@ const fallbackData = {
   homeOffice: [
     {
       id: '1',
-      usuarioId: '2',
-      empresaId: '1',
-      dataRegistro: '2025-01-20',
+      usuario_id: '2',
+      empresa_id: '1',
+      data_registro: '2025-01-20',
       transporte: 'CARRO',
       distancia: 15,
-      co2Economizado: 3.8,
-      creditosGanhos: 10,
-      createdAt: '2025-01-20T10:00:00Z'
+      co2_economizado: 3.8,
+      creditos_ganhos: 10,
+      created_at: '2025-01-20T10:00:00Z'
     }
   ]
 };
@@ -184,7 +184,7 @@ class AuthService {
       default:
         if (endpoint.startsWith('/registros/usuario/')) {
           const usuarioId = endpoint.split('/').pop();
-          return fallbackData.homeOffice.filter(record => record.usuarioId === usuarioId);
+          return fallbackData.homeOffice.filter(record => record.usuario_id === usuarioId);
         }
         return null;
     }
@@ -411,21 +411,27 @@ class EmployeeService {
             id: '1',
             nome: 'Vale Presente Sustentável',
             descricao: 'R$ 50 em vale-presente para lojas ecológicas',
-            custo: 100,
-            categoria: 'vouchers'
+            cost: 100,
+            category: 'vouchers',
+            image: '🎁',
+            featured: true,
+            tags: ['popular', 'sustentável']
           },
           {
             id: '2',
             nome: 'Doação para ONG Ambiental',
             descricao: 'Faça uma doação em seu nome para uma organização de proteção ambiental',
-            custo: 50,
-            categoria: 'doacoes'
+            cost: 50,
+            category: 'doacoes',
+            image: '🌳',
+            featured: false,
+            tags: ['impacto', 'social']
           }
         ];
       default:
         if (endpoint.startsWith('/registros/usuario/')) {
           const usuarioId = endpoint.split('/').pop();
-          return fallbackData.homeOffice.filter(record => record.usuarioId === usuarioId);
+          return fallbackData.homeOffice.filter(record => record.usuario_id === usuarioId);
         }
         return null;
     }
@@ -436,14 +442,14 @@ class EmployeeService {
     
     const novoRegistro: HomeOfficeRecord = {
       id: `ho-${Date.now()}`,
-      usuarioId: data.usuarioId,
-      empresaId: '1', // Default
-      dataRegistro: new Date().toISOString().split('T')[0],
+      usuario_id: data.usuarioId,
+      empresa_id: '1', // Default
+      data_registro: new Date().toISOString().split('T')[0],
       transporte: data.transporte,
       distancia: data.distancia,
-      co2Economizado: data.distancia * 0.21, // Cálculo simplificado
-      creditosGanhos: Math.floor(data.distancia * 2.5),
-      createdAt: new Date().toISOString()
+      co2_economizado: data.distancia * 0.21, // Cálculo simplificado
+      creditos_ganhos: Math.floor(data.distancia * 2.5),
+      created_at: new Date().toISOString()
     };
 
     // Adicionar aos dados de fallback
@@ -453,20 +459,20 @@ class EmployeeService {
   }
 
   async getEmployeeStats(usuarioId: string): Promise<EmployeeStats> {
-    console.log('📊 Obtendo estatísticas do colaborador usando fallback');
+    console.log(`📊 Obtendo estatísticas para o colaborador ${usuarioId}`);
     
     const historico = await this.getHomeOfficeHistory(usuarioId);
     
-    const totalDiasHomeOffice = historico.length;
-    const totalCO2Economizado = historico.reduce((sum, record) => sum + (record.co2Economizado || 0), 0);
-    const totalCreditos = historico.reduce((sum, record) => sum + (record.creditosGanhos || 0), 0);
+    const total_dias_home_office = historico.length;
+    const total_co2_economizado = historico.reduce((sum, record) => sum + (record.co2_economizado || 0), 0);
+    const total_creditos = historico.reduce((sum, record) => sum + (record.creditos_ganhos || 0), 0);
     
     return {
-      totalDiasHomeOffice,
-      totalCO2Economizado,
-      totalCreditos,
-      diasSemanaAtual: historico.filter(record => {
-        const recordDate = new Date(record.dataRegistro);
+      total_dias_home_office,
+      total_co2_economizado,
+      total_creditos,
+      dias_semana_atual: historico.filter(record => {
+        const recordDate = new Date(record.data_registro);
         const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         return recordDate > oneWeekAgo;
       }).length,
