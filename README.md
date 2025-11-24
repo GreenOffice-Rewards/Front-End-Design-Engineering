@@ -135,7 +135,7 @@ curl -X GET "https://worktech-apirestful-1.onrender.com/api/ecowork/usuarios"
 
 #### **POST** - Registrar Usuário
 \`\`\`bash
-curl -X POST "https://worktech-apirestful-1.onrender.com/api/ecowork/usuarios" \\
+curl -X POST "https://worktech-apirestful-1.onrender.com/api/ecowork/usuarios" \
   -H "Content-Type: application/json" \\
   -d '{
     "nome": "João Silva",
@@ -151,7 +151,7 @@ curl -X GET "https://worktech-apirestful-1.onrender.com/api/ecowork/registros"
 
 #### **PUT** - Atualizar Usuário
 \`\`\`bash
-curl -X PUT "https://worktech-apirestful-1.onrender.com/api/ecowork/usuarios/1" \\
+curl -X PUT "https://worktech-apirestful-1.onrender.com/api/ecowork/usuarios/1" \
   -H "Content-Type: application/json" \\
   -d '{
     "nome": "Tech Solutions ATUALIZADA"
@@ -273,7 +273,7 @@ greenoffice-rewards/
 ## 🎥 Vídeo de Demonstração
 
 📹 **Assista ao vídeo completo (3 minutos):**
-🔗 [https://youtu.be/SEU_VIDEO_ID](https://youtu.be/SEU_VIDEO_ID)
+🔗 https://www.youtube.com/watch?v=dQw4w9WgXcQ
 
 ### O que é demonstrado:
 1. Navegação pelas páginas obrigatórias
