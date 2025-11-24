@@ -80,7 +80,35 @@ The Vite config has been customized for Replit:
 - **Invite Code**: ECOWORK2025
 
 ## Recent Changes
-- **Nov 23, 2025**: Initial Replit setup
+
+### **Nov 24, 2025**: Global Solution 2025-2 Requirements Implementation
+- ✅ **TypeScript Avançado implementado**:
+  - Union Types: `UserType`, `TransportationType`, `PlanType`, `BenefitCategory`
+  - Intersection Types: `CompanyUser = UserBase & {...}`, `EmployeeUser = UserBase & {...}`
+  - Type Guards e validações de tipo em runtime
+  
+- ✅ **Rotas Dinâmicas implementadas**:
+  - `/usuarios/:id` - Página de detalhes do usuário
+  - `/empresas/:id` - Página de detalhes da empresa
+  - Ambas com loading states, error handling e integração com API
+  
+- ✅ **Correção do código de convite**:
+  - Corrigida validação do código "ECOWORK2025"
+  - Busca agora em `fallbackData.empresas` pelo campo correto
+  
+- ✅ **README.md completo criado**:
+  - Todas as seções obrigatórias incluídas
+  - Documentação de API com exemplos curl (GET/POST/PUT/DELETE)
+  - Tabela de integrantes com links GitHub/LinkedIn
+  - Links para deploy Vercel e vídeo YouTube
+  - Instruções completas de instalação e uso
+  
+- ✅ **Melhorias na integração com API Java**:
+  - Métodos `getUsuarioById()` e `getEmpresaById()` adicionados ao authService
+  - Fallback robusto: busca API → filtra localmente → fallback local
+  - Logs detalhados para debugging
+
+### **Nov 23, 2025**: Initial Replit setup
   - Configured Vite for port 5000 and Replit proxy compatibility
   - Fixed HMR WebSocket connection for Replit environment
   - Fixed TypeScript type errors in api.ts
@@ -101,3 +129,5 @@ The Vite config has been customized for Replit:
 - Benefits marketplace for redeeming credits
 - Company analytics and reporting
 - Dark mode support
+- **Dynamic routing with user and company detail pages**
+- **Advanced TypeScript with Union and Intersection types**
