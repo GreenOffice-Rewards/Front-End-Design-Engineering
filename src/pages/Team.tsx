@@ -22,7 +22,7 @@ const Team: React.FC = () => {
       rm: "562403",
       turma: "1TDSPW",
       github: "https://github.com/Icaro-Jose09",
-      linkedin: "https://linkedin.com/in/icarojoao",
+      linkedin: "https://www.linkedin.com/in/icaro-jose-96b651324/",
     },
     {
       name: "Richard Freitas de Sousa",
