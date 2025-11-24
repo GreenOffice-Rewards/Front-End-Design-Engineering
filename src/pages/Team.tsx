@@ -6,6 +6,7 @@ interface TeamMember {
   turma: string
   github: string
   linkedin: string
+  image: string
 }
 
 const Team: React.FC = () => {
@@ -16,6 +17,7 @@ const Team: React.FC = () => {
       turma: "1TDSPW",
       github: "https://github.com/guilisbooa",
       linkedin: "https://www.linkedin.com/in/guilhermelisboasilva/",
+      image: "https://github.com/guilisbooa.png"
     },
     {
       name: "Icaro José dos Santos",
@@ -23,6 +25,7 @@ const Team: React.FC = () => {
       turma: "1TDSPW",
       github: "https://github.com/Icaro-Jose09",
       linkedin: "https://www.linkedin.com/in/icaro-jose-96b651324/",
+      image: "https://media.licdn.com/dms/image/v2/D4D03AQGMXHd-1SX6Zw/profile-displayphoto-scale_400_400/B4DZo16bA.KQAg-/0/1761841100972?e=1765411200&v=beta&t=LVhVJpIStNLFau9DRUug6TZIjiDWPq9_JrgvDWEZusk"
     },
     {
       name: "Richard Freitas de Sousa",
@@ -30,6 +33,7 @@ const Team: React.FC = () => {
       turma: "1TDSPW",
       github: "https://github.com/vlonerickk",
       linkedin: "https://linkedin.com/in/richard-freitas",
+      image: "https://github.com/vlonerickk.png"
     }
   ]
 
@@ -51,8 +55,11 @@ const Team: React.FC = () => {
               key={index}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105"
             >
-              <div className="w-32 h-32 bg-green-100 dark:bg-green-900 rounded-full mx-auto mb-4 flex items-center justify-center ring-4 ring-green-500/50">
-                <span className="text-5xl text-green-600 dark:text-green-400">👤</span>
+              <div className="w-32 h-32 rounded-full mx-auto mb-4 overflow-hidden ring-4 ring-green-500/50">
+                <img 
+                  src={member.image} 
+                  alt={`Foto de ${member.name}`} 
+                  className="w-full h-full object-cover" />
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
