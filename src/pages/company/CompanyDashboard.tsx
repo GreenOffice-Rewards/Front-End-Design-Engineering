@@ -253,10 +253,10 @@ const CompanyDashboard: React.FC = () => {
                     <span className="text-gray-600 dark:text-gray-300">100kg CO₂ evitados</span>
                     <span className="text-green-600 dark:text-green-400">{(stats.totalCO2Saved/100*100).toFixed(0)}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
                     <div 
                       className="bg-green-500 h-2 rounded-full"
-                      style={{ width: `${(stats.totalCO2Saved/100*100)}%` }}
+                      style={{ width: `${Math.min((stats.totalCO2Saved/100*100), 100)}%` }}
                     ></div>
                   </div>
                 </div>
@@ -266,10 +266,10 @@ const CompanyDashboard: React.FC = () => {
                     <span className="text-gray-600 dark:text-gray-300">10 colaboradores ativos</span>
                     <span className="text-blue-600 dark:text-blue-400">{(stats.activeEmployees/10*100).toFixed(0)}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
                     <div 
                       className="bg-blue-500 h-2 rounded-full"
-                      style={{ width: `${(stats.activeEmployees/10*100)}%` }}
+                      style={{ width: `${Math.min((stats.activeEmployees/10*100), 100)}%` }}
                     ></div>
                   </div>
                 </div>
