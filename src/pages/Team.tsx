@@ -6,7 +6,6 @@ interface TeamMember {
   turma: string
   github: string
   linkedin: string
-  image: string
 }
 
 const Team: React.FC = () => {
@@ -14,26 +13,23 @@ const Team: React.FC = () => {
     {
       name: "Guilherme Lisboa Silva",
       rm: "565187",
-      turma: "1TDS",
+      turma: "1TDSPW",
       github: "https://github.com/guilhermelisboa",
       linkedin: "https://linkedin.com/in/guilhermelisboa",
-      image: "/api/placeholder/200/200"
     },
     {
       name: "Icaro José dos Santos",
       rm: "562403",
-      turma: "1TDS",
+      turma: "1TDSPW",
       github: "https://github.com/icarojoao",
       linkedin: "https://linkedin.com/in/icarojoao",
-      image: "/api/placeholder/200/200"
     },
     {
       name: "Richard Freitas de Sousa",
       rm: "566127",
-      turma: "1TDS",
+      turma: "1TDSPW",
       github: "https://github.com/richardfreitas",
       linkedin: "https://linkedin.com/in/richardfreitas",
-      image: "/api/placeholder/200/200"
     }
   ]
 
@@ -55,8 +51,8 @@ const Team: React.FC = () => {
               key={index}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center transition-transform hover:scale-105"
             >
-              <div className="w-32 h-32 bg-green-100 dark:bg-green-900 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-4xl">👤</span>
+              <div className="w-32 h-32 bg-green-100 dark:bg-green-900 rounded-full mx-auto mb-4 flex items-center justify-center ring-4 ring-green-500/50">
+                <span className="text-5xl text-green-600 dark:text-green-400">👤</span>
               </div>
               
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
