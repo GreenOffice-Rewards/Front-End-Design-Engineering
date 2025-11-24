@@ -22,9 +22,9 @@
 
 | Nome | RM | Turma | GitHub | LinkedIn |
 |------|-----|-------|--------|----------|
-| **Guilherme Lisboa Silva** | 565187 | 1TDSPW | [@guilhermelisboa](https://github.com/guilhermelisboa) | [Guilherme Lisboa](https://linkedin.com/in/guilhermelisboa) |
-| **Icaro José dos Santos** | 562403 | 1TDSPW | [@icarojoao](https://github.com/icarojoao) | [Icaro Santos](https://linkedin.com/in/icarojoao) |
-| **Richard Freitas de Sousa** | 566127 | 1TDSPW | [@richardfreitas](https://github.com/richardfreitas) | [Richard Freitas](https://linkedin.com/in/richardfreitas) |
+| **Guilherme Lisboa Silva** | 565187 | 1TDSPW | [@guilisbooa](https://github.com/guilisbooa) | [Guilherme Lisboa](https://linkedin.com/in/guilhermelisboa) |
+| **Icaro José dos Santos** | 562403 | 1TDSPW | [@Icaro-Jose09](https://github.com/Icaro-Jose09) | [Icaro Santos](https://linkedin.com/in/icarojoao) |
+| **Richard Freitas de Sousa** | 566127 | 1TDSPW | [@vlonerickk](https://github.com/vlonerickk) | [Richard Freitas](https://linkedin.com/in/richardfreitas) |
 
 ---
 
